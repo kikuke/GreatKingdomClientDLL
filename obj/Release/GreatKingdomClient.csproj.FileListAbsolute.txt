@@ -4,3 +4,9 @@ C:\Users\KJS\Documents\DV\GreatKingdomClient\obj\Release\GreatKingdomClient.cspr
 C:\Users\KJS\Documents\DV\GreatKingdomClient\obj\Release\GreatKingdomClient.csproj.CoreCompileInputs.cache
 C:\Users\KJS\Documents\DV\GreatKingdomClient\obj\Release\GreatKingdomClient.dll
 C:\Users\KJS\Documents\DV\GreatKingdomClient\obj\Release\GreatKingdomClient.pdb
+C:\Users\KJS\Documents\DV\GreatKingdomClientDLL\bin\Release\GreatKingdomClient.dll
+C:\Users\KJS\Documents\DV\GreatKingdomClientDLL\bin\Release\GreatKingdomClient.pdb
+C:\Users\KJS\Documents\DV\GreatKingdomClientDLL\obj\Release\GreatKingdomClient.csproj.AssemblyReference.cache
+C:\Users\KJS\Documents\DV\GreatKingdomClientDLL\obj\Release\GreatKingdomClient.csproj.CoreCompileInputs.cache
+C:\Users\KJS\Documents\DV\GreatKingdomClientDLL\obj\Release\GreatKingdomClient.dll
+C:\Users\KJS\Documents\DV\GreatKingdomClientDLL\obj\Release\GreatKingdomClient.pdb

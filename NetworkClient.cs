@@ -23,14 +23,58 @@ namespace GreatKingdomClient
             stream = tc.GetStream();
         }
 
-        public int sendSetClntIDPacket(int clntID)
+        public int SendSetClntIDPacket(int clnt_id)
         {
             byte[] buffer = new byte[BUFFER_MAX_SIZE];
-            int packetLen = -1;
+            int packetLen;
 
             BasePacketHeader header = new BasePacketHeader(PacketDefine.TCP_PACKET_START_CODE, Convert.ToUInt32(Marshal.SizeOf(typeof(SetClntIDData))), PacketDefine.HANDLER_GAMEROOM, PacketDefine.HANDLER_GAMEROOM_SETCLNTID, 0, 0);
             BasePacketTrailer trailer = new BasePacketTrailer(PacketDefine.TCP_PACKET_END_CODE);
-            SetClntIDData data = new SetClntIDData(clntID);
+            SetClntIDData data = new SetClntIDData(clnt_id);
+
+            ReturnRoomData retData;
+
+            packetLen = PacketUtility.MakePacket(buffer, header, data, trailer);
+            stream.Write(buffer, 0, packetLen);
+            if (ReadData(buffer, out retData) < 0)
+                return -1;
+
+            if (retData.isSuccess == 0)
+                return -1;
+
+            return 0;
+        }
+
+        public int SendCreateGameRoomPacket(int roomID)
+        {
+            byte[] buffer = new byte[BUFFER_MAX_SIZE];
+            int packetLen;
+
+            BasePacketHeader header = new BasePacketHeader(PacketDefine.TCP_PACKET_START_CODE, Convert.ToUInt32(Marshal.SizeOf(typeof(CreateRoomData))), PacketDefine.HANDLER_GAMEROOM, PacketDefine.HANDLER_GAMEROOM_CREATE, 0, 0);
+            BasePacketTrailer trailer = new BasePacketTrailer(PacketDefine.TCP_PACKET_END_CODE);
+            CreateRoomData data = new CreateRoomData(roomID);
+
+            ReturnRoomData retData;
+
+            packetLen = PacketUtility.MakePacket(buffer, header, data, trailer);
+            stream.Write(buffer, 0, packetLen);
+            if (ReadData(buffer, out retData) < 0)
+                return -1;
+
+            if (retData.isSuccess == 0)
+                return -1;
+
+            return 0;
+        }
+
+        public int SendJoinGameRoomPacket(int roomID)
+        {
+            byte[] buffer = new byte[BUFFER_MAX_SIZE];
+            int packetLen;
+
+            BasePacketHeader header = new BasePacketHeader(PacketDefine.TCP_PACKET_START_CODE, Convert.ToUInt32(Marshal.SizeOf(typeof(JoinRoomData))), PacketDefine.HANDLER_GAMEROOM, PacketDefine.HANDLER_GAMEROOM_JOIN, 0, 0);
+            BasePacketTrailer trailer = new BasePacketTrailer(PacketDefine.TCP_PACKET_END_CODE);
+            JoinRoomData data = new JoinRoomData(roomID);
 
             ReturnRoomData retData;
 

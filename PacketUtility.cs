@@ -30,6 +30,7 @@ namespace GreatKingdomClient
 
             return size;
         }
+
         public static int ByteToObject<T>(byte[] buffer, int offset, out T data)
         {
             int size = Marshal.SizeOf(typeof(T));

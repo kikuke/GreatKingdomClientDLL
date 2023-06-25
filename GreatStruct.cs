@@ -73,4 +73,28 @@ namespace GreatKingdomClient
             this.clnt_id = clnt_id;
         }
     }
+
+    [Serializable]
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct CreateRoomData
+    {
+        Int32 roomID;
+
+        public CreateRoomData(int roomID)
+        {
+            this.roomID = roomID;
+        }
+    }
+
+    [Serializable]
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct JoinRoomData
+    {
+        Int32 roomID;
+
+        public JoinRoomData(int roomID)
+        {
+            this.roomID = roomID;
+        }
+    }
 }
