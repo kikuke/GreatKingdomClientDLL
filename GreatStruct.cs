@@ -15,6 +15,20 @@ namespace GreatKingdomClient
         public int player_num;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
         public int[] playerID;
+
+        public override string ToString()
+        {
+            return base.ToString() + ": " + "\n{\nroomID: " + roomID + "\nplayer_num: " + player_num + "\nplayer1 ID: " + playerID[0] + "\nplayer2 ID: " + playerID[1] + "\n}\n";
+        }
+    }
+
+    [Serializable]
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct RoomDatas
+    {
+        public int roomNum;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 20)]
+        public GameRoomInfo[] roomInfo;
     }
 
     [Serializable]
@@ -71,6 +85,18 @@ namespace GreatKingdomClient
         public SetClntIDData(int clnt_id)
         {
             this.clnt_id = clnt_id;
+        }
+    }
+
+    [Serializable]
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct GetRoomData
+    {
+        Int32 offset;
+
+        public GetRoomData(int offset)
+        {
+            this.offset = offset;
         }
     }
 

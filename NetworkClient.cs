@@ -45,6 +45,25 @@ namespace GreatKingdomClient
             return 0;
         }
 
+        public RoomDatas SendGetGameRoomPacket(int offset)
+        {
+            byte[] buffer = new byte[BUFFER_MAX_SIZE];
+            int packetLen;
+
+            BasePacketHeader header = new BasePacketHeader(PacketDefine.TCP_PACKET_START_CODE, Convert.ToUInt32(Marshal.SizeOf(typeof(GetRoomData))), PacketDefine.HANDLER_GAMEROOM, PacketDefine.HANDLER_GAMEROOM_GET, 0, 0);
+            BasePacketTrailer trailer = new BasePacketTrailer(PacketDefine.TCP_PACKET_END_CODE);
+            GetRoomData data = new GetRoomData(offset);
+
+            RoomDatas retData;
+
+            packetLen = PacketUtility.MakePacket(buffer, header, data, trailer);
+            stream.Write(buffer, 0, packetLen);
+            if (ReadData(buffer, out retData) < 0)
+                return retData;
+
+            return retData;
+        }
+
         public int SendCreateGameRoomPacket(int roomID)
         {
             byte[] buffer = new byte[BUFFER_MAX_SIZE];
