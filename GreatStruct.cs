@@ -97,4 +97,16 @@ namespace GreatKingdomClient
             this.roomID = roomID;
         }
     }
+
+    [Serializable]
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct OutRoomData
+    {
+        Int32 roomID;
+
+        public OutRoomData(int roomID)
+        {
+            this.roomID = roomID;
+        }
+    }
 }

@@ -89,6 +89,28 @@ namespace GreatKingdomClient
             return 0;
         }
 
+        public int SendOutGameRoomPacket(int roomID)
+        {
+            byte[] buffer = new byte[BUFFER_MAX_SIZE];
+            int packetLen;
+
+            BasePacketHeader header = new BasePacketHeader(PacketDefine.TCP_PACKET_START_CODE, Convert.ToUInt32(Marshal.SizeOf(typeof(OutRoomData))), PacketDefine.HANDLER_GAMEROOM, PacketDefine.HANDLER_GAMEROOM_OUT, 0, 0);
+            BasePacketTrailer trailer = new BasePacketTrailer(PacketDefine.TCP_PACKET_END_CODE);
+            OutRoomData data = new OutRoomData(roomID);
+
+            ReturnRoomData retData;
+
+            packetLen = PacketUtility.MakePacket(buffer, header, data, trailer);
+            stream.Write(buffer, 0, packetLen);
+            if (ReadData(buffer, out retData) < 0)
+                return -1;
+
+            if (retData.isSuccess == 0)
+                return -1;
+
+            return 0;
+        }
+
         public void Close()
         {
             tc.Close();
