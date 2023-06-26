@@ -12,15 +12,28 @@ namespace GreatKingdomClient
 
     public class NetworkClient
     {
-        const int BUFFER_MAX_SIZE = 2048;
+        const int BUFFER_MAX_SIZE = 2048*2*2*2;
 
         private TcpClient tc;
         private NetworkStream stream;
+        private Queue<GameRoomInfo> updateQueue;
 
         public NetworkClient(string serverIP, int serverPort)
         {
             tc = new TcpClient(serverIP, serverPort);
             stream = tc.GetStream();
+        }
+
+        //업데이트 정보가 있는가
+        public bool isUpdate()
+        {
+            return updateQueue.Count > 0;
+        }
+
+        //업데이트 정보 얻기
+        public GameRoomInfo GetUpdateData()
+        {
+            return updateQueue.Dequeue();
         }
 
         public int SendSetClntIDPacket(int clnt_id)
@@ -36,6 +49,7 @@ namespace GreatKingdomClient
 
             packetLen = PacketUtility.MakePacket(buffer, header, data, trailer);
             stream.Write(buffer, 0, packetLen);
+
             if (ReadData(buffer, out retData) < 0)
                 return -1;
 
