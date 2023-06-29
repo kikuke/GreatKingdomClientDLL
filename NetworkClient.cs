@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace GreatKingdomClient
@@ -16,7 +17,11 @@ namespace GreatKingdomClient
 
         private TcpClient tc;
         private NetworkStream stream;
-        private Queue<GameRoomInfo> updateQueue;
+        private Queue<GameRoomInfo> updateQueue = new Queue<GameRoomInfo>();
+
+        bool isReadThread;
+        private Thread readPacketThread;
+        private object readLock = new object();
 
         public NetworkClient(string serverIP, int serverPort)
         {
@@ -24,23 +29,111 @@ namespace GreatKingdomClient
             stream = tc.GetStream();
         }
 
-        //업데이트 정보가 있는가
-        public bool isUpdate()
+        ~NetworkClient()
         {
-            return updateQueue.Count > 0;
+            tc.Close();
+        }
+
+        //업데이트 정보가 있는가
+        public bool IsUpdate()
+        {
+            bool isUpdate;
+
+            lock (readLock)
+            {
+                isUpdate = updateQueue.Count > 0;
+            }
+            return isUpdate;
         }
 
         //업데이트 정보 얻기
         public GameRoomInfo GetUpdateData()
         {
-            return updateQueue.Dequeue();
+            GameRoomInfo info;
+
+            lock (readLock)
+            {
+                info = updateQueue.Dequeue();
+            }
+            return info;
+        }
+
+        public int SetGameID(int id)
+        {
+            return SendSetClntIDPacket(id);
+        }
+
+        public RoomDatas GetGameRooms(int offset)
+        {
+            return SendGetGameRoomPacket(offset);
+        }
+
+        public int CreateGameRoom(int roomID)
+        {
+            return SendCreateGameRoomPacket(roomID);
+        }
+
+        public int JoinGameRoom(int roomID)
+        {
+            if (SendJoinGameRoomPacket(roomID) < 0)
+                return -1;
+
+            StartReadThread();
+            return 0;
+        }
+
+        public void UpdateGameRoom(GameRoomInfo roomInfo)
+        {
+            SendUpdateGameRoomPacket(roomInfo);
+        }
+
+        public int OutGameRoom(int roomID)
+        {
+            EndReadThread();
+            if (SendOutGameRoomPacket(roomID) < 0)
+                return -1;
+
+            return 0;
+        }
+
+        private void StartReadThread()
+        {
+            readPacketThread = new Thread(new ThreadStart(ReadPacket));
+            isReadThread = true;
+            readPacketThread.Start();
+        }
+
+        private void EndReadThread()
+        {
+            isReadThread = false;
+            readPacketThread.Join();
         }
 
         //Todo: 룸 업데이트 정보 패킷일 경우 큐에 집어넣는 기능
+        private void ReadPacket()
+        {
+            while (isReadThread)
+            {
+                byte[] buffer = new byte[BUFFER_MAX_SIZE];
+                ReturnRoomData retData;
+
+                if (ReadData(buffer, out retData) < 0)
+                {
+                    Console.WriteLine("read data failed!");
+                    stream.Flush();
+                    return;
+                }
+
+                lock(readLock)
+                {
+                    updateQueue.Enqueue(retData.roomInfo);
+                }
+                Console.WriteLine("새 데이터가 들어왔습니다.");
+            }
+        }
 
         //Todo: 룸 정보 업데이트 보내는 패킷
-
-        public int SendSetClntIDPacket(int clnt_id)
+        private int SendSetClntIDPacket(int clnt_id)
         {
             byte[] buffer = new byte[BUFFER_MAX_SIZE];
             int packetLen;
@@ -63,7 +156,7 @@ namespace GreatKingdomClient
             return 0;
         }
 
-        public RoomDatas SendGetGameRoomPacket(int offset)
+        private RoomDatas SendGetGameRoomPacket(int offset)
         {
             byte[] buffer = new byte[BUFFER_MAX_SIZE];
             int packetLen;
@@ -82,7 +175,7 @@ namespace GreatKingdomClient
             return retData;
         }
 
-        public int SendCreateGameRoomPacket(int roomID)
+        private int SendCreateGameRoomPacket(int roomID)
         {
             byte[] buffer = new byte[BUFFER_MAX_SIZE];
             int packetLen;
@@ -104,7 +197,7 @@ namespace GreatKingdomClient
             return 0;
         }
 
-        public int SendJoinGameRoomPacket(int roomID)
+        private int SendJoinGameRoomPacket(int roomID)
         {
             byte[] buffer = new byte[BUFFER_MAX_SIZE];
             int packetLen;
@@ -126,7 +219,7 @@ namespace GreatKingdomClient
             return 0;
         }
 
-        public int SendOutGameRoomPacket(int roomID)
+        private int SendOutGameRoomPacket(int roomID)
         {
             byte[] buffer = new byte[BUFFER_MAX_SIZE];
             int packetLen;
@@ -148,7 +241,7 @@ namespace GreatKingdomClient
             return 0;
         }
 
-        public void SendUpdateGameRoomPacket(GameRoomInfo updateInfo)
+        private void SendUpdateGameRoomPacket(GameRoomInfo updateInfo)
         {
             byte[] buffer = new byte[BUFFER_MAX_SIZE];
             int packetLen;
@@ -159,11 +252,6 @@ namespace GreatKingdomClient
 
             packetLen = PacketUtility.MakePacket(buffer, header, data, trailer);
             stream.Write(buffer, 0, packetLen);
-        }
-
-        public void Close()
-        {
-            tc.Close();
         }
 
         private int ReadData<T>(byte[] buffer, out T data)
