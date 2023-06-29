@@ -19,5 +19,6 @@ namespace GreatKingdomClient
         public const int HANDLER_GAMEROOM_CREATE = 0x03;
         public const int HANDLER_GAMEROOM_JOIN = 0x04;
         public const int HANDLER_GAMEROOM_OUT = 0x05;
+        public const int HANDLER_GAMEROOM_UPDATE = 0x06;
     }
 }

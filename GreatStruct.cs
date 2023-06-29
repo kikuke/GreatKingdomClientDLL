@@ -153,4 +153,16 @@ namespace GreatKingdomClient
             this.roomID = roomID;
         }
     }
+
+    [Serializable]
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct UpdateRoomData
+    {
+        public GameRoomInfo roomInfo;
+
+        public UpdateRoomData(GameRoomInfo roomInfo)
+        {
+            this.roomInfo = roomInfo;
+        }
+    }
 }

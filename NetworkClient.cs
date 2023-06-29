@@ -36,6 +36,10 @@ namespace GreatKingdomClient
             return updateQueue.Dequeue();
         }
 
+        //Todo: 룸 업데이트 정보 패킷일 경우 큐에 집어넣는 기능
+
+        //Todo: 룸 정보 업데이트 보내는 패킷
+
         public int SendSetClntIDPacket(int clnt_id)
         {
             byte[] buffer = new byte[BUFFER_MAX_SIZE];
@@ -142,6 +146,19 @@ namespace GreatKingdomClient
                 return -1;
 
             return 0;
+        }
+
+        public void SendUpdateGameRoomPacket(GameRoomInfo updateInfo)
+        {
+            byte[] buffer = new byte[BUFFER_MAX_SIZE];
+            int packetLen;
+
+            BasePacketHeader header = new BasePacketHeader(PacketDefine.TCP_PACKET_START_CODE, Convert.ToUInt32(Marshal.SizeOf(typeof(UpdateRoomData))), PacketDefine.HANDLER_GAMEROOM, PacketDefine.HANDLER_GAMEROOM_UPDATE, 0, 0);
+            BasePacketTrailer trailer = new BasePacketTrailer(PacketDefine.TCP_PACKET_END_CODE);
+            UpdateRoomData data = new UpdateRoomData(updateInfo);
+
+            packetLen = PacketUtility.MakePacket(buffer, header, data, trailer);
+            stream.Write(buffer, 0, packetLen);
         }
 
         public void Close()
