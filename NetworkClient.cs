@@ -19,7 +19,7 @@ namespace GreatKingdomClient
         private NetworkStream stream;
         private Queue<GameRoomInfo> updateQueue = new Queue<GameRoomInfo>();
 
-        bool isReadThread;
+        bool isInGame;
         private Thread readPacketThread;
         private object readLock = new object();
 
@@ -39,6 +39,12 @@ namespace GreatKingdomClient
         {
             bool isUpdate;
 
+            if (!isInGame)
+            {
+                Console.WriteLine("Not good in this context");
+                return false;
+            }
+
             lock (readLock)
             {
                 isUpdate = updateQueue.Count > 0;
@@ -51,6 +57,12 @@ namespace GreatKingdomClient
         {
             GameRoomInfo info;
 
+            if (!isInGame)
+            {
+                Console.WriteLine("Not good in this context");
+                throw new Exception("Isnt in game");
+            }
+
             lock (readLock)
             {
                 info = updateQueue.Dequeue();
@@ -60,21 +72,45 @@ namespace GreatKingdomClient
 
         public int SetGameID(int id)
         {
+            if (isInGame)
+            {
+                Console.WriteLine("Not good in this context");
+                throw new Exception("In game");
+            }
+
             return SendSetClntIDPacket(id);
         }
 
         public RoomDatas GetGameRooms(int offset)
         {
+            if (isInGame)
+            {
+                Console.WriteLine("Not good in this context");
+                throw new Exception("In game");
+            }
+
             return SendGetGameRoomPacket(offset);
         }
 
         public int CreateGameRoom(int roomID)
         {
+            if (isInGame)
+            {
+                Console.WriteLine("Not good in this context");
+                throw new Exception("In game");
+            }
+
             return SendCreateGameRoomPacket(roomID);
         }
 
         public int JoinGameRoom(int roomID)
         {
+            if (isInGame)
+            {
+                Console.WriteLine("Not good in this context");
+                throw new Exception("In game");
+            }
+
             if (SendJoinGameRoomPacket(roomID) < 0)
                 return -1;
 
@@ -84,11 +120,23 @@ namespace GreatKingdomClient
 
         public void UpdateGameRoom(GameRoomInfo roomInfo)
         {
+            if (!isInGame)
+            {
+                Console.WriteLine("Not good in this context");
+                throw new Exception("Isnt in game");
+            }
+
             SendUpdateGameRoomPacket(roomInfo);
         }
 
         public int OutGameRoom(int roomID)
         {
+            if (!isInGame)
+            {
+                Console.WriteLine("Not good in this context");
+                throw new Exception("Isnt in game");
+            }
+
             EndReadThread();
             if (SendOutGameRoomPacket(roomID) < 0)
                 return -1;
@@ -99,20 +147,20 @@ namespace GreatKingdomClient
         private void StartReadThread()
         {
             readPacketThread = new Thread(new ThreadStart(ReadPacket));
-            isReadThread = true;
+            isInGame = true;
             readPacketThread.Start();
         }
 
         private void EndReadThread()
         {
-            isReadThread = false;
+            isInGame = false;
             readPacketThread.Join();
         }
 
         //Todo: 룸 업데이트 정보 패킷일 경우 큐에 집어넣는 기능
         private void ReadPacket()
         {
-            while (isReadThread)
+            while (isInGame)
             {
                 byte[] buffer = new byte[BUFFER_MAX_SIZE];
                 ReturnRoomData retData;
@@ -130,6 +178,7 @@ namespace GreatKingdomClient
                 }
                 Console.WriteLine("새 데이터가 들어왔습니다.");
             }
+            Console.WriteLine("읽기 스레드 종료");
         }
 
         //Todo: 룸 정보 업데이트 보내는 패킷
