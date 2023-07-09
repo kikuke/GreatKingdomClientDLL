@@ -260,10 +260,16 @@ namespace GreatKingdomClient
             packetLen = PacketUtility.MakePacket(buffer, header, data, trailer);
             stream.Write(buffer, 0, packetLen);
             if (ReadData(buffer, out retData) < 0)
+            {
+                Console.WriteLine("ReadDataError()");
                 return -1;
+            }
 
             if (retData.isSuccess == 0)
+            {
+                Console.WriteLine("isSuccess is 0");
                 return -1;
+            }
 
             return 0;
         }
@@ -313,12 +319,13 @@ namespace GreatKingdomClient
             int readLen = 0;
             int offset = 0;
 
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < 10; i++)
             {
                 if ((readLen += stream.Read(buffer, readLen, packetSize - readLen)) >= packetSize)
                         break;
-                if (i == 4)
+                if (i == 9)
                 {
+                    Console.WriteLine("try Read Over");
                     data = default(T);
                     return -1;
                 }
