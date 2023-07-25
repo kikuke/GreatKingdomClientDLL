@@ -9,6 +9,15 @@ namespace GreatKingdomClient
 {
     public class PacketUtility
     {
+        public static int MakePacket(byte[] packet, BasePacketHeader header, BasePacketTrailer trailer)
+        {
+            int packetSize = 0;
+
+            packetSize += ObjcetToByte(packet, packetSize, header);
+            packetSize += ObjcetToByte(packet, packetSize, trailer);
+            return packetSize;
+        }
+
         public static int MakePacket<T>(byte[] packet, BasePacketHeader header, T payLoad, BasePacketTrailer trailer)
         {
             int packetSize = 0;

@@ -9,6 +9,26 @@ namespace GreatKingdomClient
 {
     [Serializable]
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct ReturnUserData
+    {
+        // if success 1, else 0
+        public int isSuccess;
+    }
+
+    [Serializable]
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct SetClntIDData
+    {
+        public int clnt_id;
+
+        public SetClntIDData(int clnt_id)
+        {
+            this.clnt_id = clnt_id;
+        }
+    }
+
+    [Serializable]
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct GameRoomInfo
     {
         public int roomID;
@@ -91,18 +111,6 @@ namespace GreatKingdomClient
         public BasePacketTrailer(uint endCode)
         {
             this.endCode = endCode;
-        }
-    }
-
-    [Serializable]
-    [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct SetClntIDData
-    {
-        Int32 clnt_id;
-
-        public SetClntIDData(int clnt_id)
-        {
-            this.clnt_id = clnt_id;
         }
     }
 
