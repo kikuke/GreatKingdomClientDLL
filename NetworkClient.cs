@@ -159,7 +159,7 @@ namespace GreatKingdomClient
         private void EndReadThread()
         {
             isInGame = false;
-            // readPacketThread.Join(); // 테스트용 주석
+            readPacketThread.Join(); // 테스트용 주석
         }
 
         //Todo: 룸 업데이트 정보 패킷일 경우 큐에 집어넣는 기능
@@ -313,11 +313,13 @@ namespace GreatKingdomClient
 
             packetLen = PacketUtility.MakePacket(buffer, header, data, trailer);
             stream.Write(buffer, 0, packetLen);
+            /*
             if (ReadData(buffer, out retData) < 0)
                 return -1;
 
             if (retData.isSuccess == 0)
                 return -1;
+            */
 
             return 0;
         }
