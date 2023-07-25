@@ -159,7 +159,7 @@ namespace GreatKingdomClient
         private void EndReadThread()
         {
             isInGame = false;
-            readPacketThread.Join(); // 테스트용 주석
+            //readPacketThread.Join(); // 테스트용 주석
         }
 
         //Todo: 룸 업데이트 정보 패킷일 경우 큐에 집어넣는 기능
