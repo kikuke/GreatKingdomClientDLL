@@ -39,20 +39,15 @@ namespace GreatKingdomClient
         //0 준비중, 1 시작, 2 종료 이런 느낌.
         public int roomStatus;
 
-        //누구 턴인지, 0 or 1
-        public int nowTurnID;
-
         //판 정보. 1차원 배열
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2*9*9)]
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 9*9)]
         public int[] panel;
 
-        //점수 현황
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
-        public double[] score;
+        public int passNum;
 
         //두명 다 패스했는지
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
-        public int[] isPass;
+        public int isCSP1;
+        public int isCSP2;
 
         public override string ToString()
         {
