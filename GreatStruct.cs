@@ -38,6 +38,7 @@ namespace GreatKingdomClient
 
         //0 준비중, 1 시작, 2 종료 이런 느낌.
         public int roomStatus;
+        public int roomStatusBefore;
 
         //판 정보. 1차원 배열
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 9*9)]
